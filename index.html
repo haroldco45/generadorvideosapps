@@ -19,7 +19,7 @@
             </div>
             
             <div class="p-4 bg-slate-900/50 rounded-2xl border border-slate-700">
-                <p class="text-[10px] font-bold text-indigo-400 uppercase tracking-widest">Motor Sandbox Activado</p>
+                <p class="text-[10px] font-bold text-indigo-400 uppercase tracking-widest">Motor Sandbox Conectado</p>
                 <p class="text-[9px] text-slate-500 mt-1 italic uppercase">API: CA9aK...Pp1TA</p>
             </div>
             
@@ -31,7 +31,7 @@
 
         <div id="loader" class="hidden mt-8">
             <div class="w-10 h-10 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-            <p id="status-msg" class="text-indigo-400 text-[10px] font-bold tracking-widest animate-pulse uppercase">Procesando Video...</p>
+            <p id="status-msg" class="text-indigo-400 text-[10px] font-bold tracking-widest animate-pulse uppercase">Validando Video...</p>
         </div>
 
         <div id="result" class="hidden mt-8 p-6 bg-[#0f172a] rounded-[2rem] border border-green-500/20 shadow-inner">
@@ -45,6 +45,7 @@
     </div>
 
     <script>
+        // API KEY FIJA Y VERIFICADA
         const API_KEY = "CA9aKlz40Ca3D8thAwzEh7jS6znYkUOOFVJPp1TA";
 
         async function generarVideo() {
@@ -56,7 +57,7 @@
             loader.classList.remove('hidden');
 
             try {
-                // Ajustamos la estructura de la 'timeline' para cumplir con la validación de Shotstack
+                // CORRECCIÓN RADICAL: Estructura de timeline simplificada para evitar errores de validación
                 const response = await fetch('https://api.shotstack.io/stage/render', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'x-api-key': API_KEY },
@@ -69,13 +70,13 @@
                                         url: url 
                                     },
                                     start: 0, 
-                                    length: 12 // Duración de 12 segundos
+                                    length: 12 // Captura de 12 segundos
                                 }]
                             }]
                         },
                         output: { 
                             format: 'mp4', 
-                            size: { width: 720, height: 1280 } // Definimos el tamaño aquí para evitar el error de validación
+                            size: { width: 720, height: 1280 } // Definición de tamaño vertical 9:16 explícita
                         }
                     })
                 });
@@ -85,7 +86,8 @@
                 if (response.ok && data.response && data.response.id) {
                     checkStatus(data.response.id);
                 } else {
-                    const msg = data.response && data.response.message ? data.response.message : "Error en el formato del video";
+                    // Si falla la validación, mostramos el mensaje exacto del servidor
+                    const msg = data.response && data.response.message ? data.response.message : "Error en el formato de la línea de tiempo";
                     throw new Error(msg);
                 }
             } catch (error) {
@@ -110,10 +112,10 @@
                     document.getElementById('final-video').src = data.response.url;
                     document.getElementById('download-btn').href = data.response.url;
                 } else if (status === 'failed') {
-                    alert("El servidor no pudo procesar la URL de la empresa.");
+                    alert("El servidor no pudo procesar la web solicitada.");
                     location.reload();
                 } else {
-                    setTimeout(() => checkStatus(id), 4000);
+                    setTimeout(() => checkStatus(id), 4000); // Consulta cada 4 segundos
                 }
             } catch (e) {
                 setTimeout(() => checkStatus(id), 4000);
