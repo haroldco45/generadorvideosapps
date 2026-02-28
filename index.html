@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vibras Positivas | Video Studio Final</title>
+    <title>Vibras Positivas | Multi-App Studio</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .loader { border-top-color: #6366f1; animation: spinner 1.5s linear infinite; }
@@ -17,8 +17,8 @@
         
         <div class="space-y-4">
             <div class="text-left">
-                <label class="text-[10px] font-bold text-slate-500 uppercase ml-2 mb-1 block">URL de tu Aplicación</label>
-                <input type="url" id="url-input" value="https://haroldco45.github.io/criollitas/" 
+                <label class="text-[10px] font-bold text-slate-500 uppercase ml-2 mb-1 block">URL de la App (Cualquier Empresa)</label>
+                <input type="url" id="url-input" placeholder="https://tu-app-aqui.com" 
                        class="w-full p-4 bg-[#0f172a] border border-slate-700 rounded-2xl outline-none text-sm focus:border-indigo-500 transition-all">
             </div>
             
@@ -30,18 +30,18 @@
             
             <button onclick="requestVideo()" id="btn-main"
                     class="w-full bg-indigo-600 py-4 rounded-2xl font-black hover:bg-indigo-500 transition-all shadow-lg uppercase tracking-widest active:scale-95">
-                GENERAR VIDEO REAL
+                GENERAR VIDEO VERTICAL
             </button>
         </div>
 
         <div id="loader" class="hidden mt-8 bg-slate-800/50 p-6 rounded-2xl">
             <div class="loader ease-linear rounded-full border-4 border-t-4 border-slate-900 h-10 w-10 mx-auto mb-4"></div>
-            <p id="status-msg" class="text-indigo-400 text-[10px] font-bold tracking-[0.2em] animate-pulse uppercase">PROCESANDO EN SHOTSTACK...</p>
+            <p id="status-msg" class="text-indigo-400 text-[10px] font-bold tracking-[0.2em] animate-pulse uppercase">PROCESANDO...</p>
         </div>
 
         <div id="result" class="hidden mt-8 p-6 bg-[#0f172a] rounded-[2rem] border border-green-500/20 shadow-inner">
             <h3 class="text-green-400 font-bold mb-4 uppercase text-[10px] tracking-[0.3em]">¡Video Creado!</h3>
-            <video id="final-video" controls class="w-full rounded-2xl mb-6 shadow-2xl border border-slate-800 bg-black"></video>
+            <video id="final-video" controls class="w-full rounded-2xl mb-6 shadow-2xl border border-slate-800 bg-black aspect-[9/16]"></video>
             <a id="download-btn" href="#" download="vibras_positivas.mp4" 
                class="block text-center bg-green-600 py-4 rounded-2xl font-bold text-sm hover:bg-green-500 transition-all shadow-lg uppercase">
                 📥 Descargar MP4
@@ -57,11 +57,15 @@
             const loader = document.getElementById('loader');
 
             if(!apiVal) return alert("Pega la llave naranja de Sandbox.");
-            
+            if(!urlVal) return alert("Ingresa una URL válida.");
+
             btn.disabled = true;
             btn.style.opacity = "0.5";
             loader.classList.remove('hidden');
             document.getElementById('result').classList.add('hidden');
+
+            // URL del logo de Vibras Positivas (Asegúrate de que esta URL sea pública)
+            const logoUrl = "https://haroldco45.github.io/criollitas/logo_vibras.png"; 
 
             try {
                 const response = await fetch('https://api.shotstack.io/v1/render', {
@@ -69,28 +73,43 @@
                     headers: { 'Content-Type': 'application/json', 'x-api-key': apiVal },
                     body: JSON.stringify({
                         timeline: {
-                            tracks: [{
-                                clips: [{
-                                    asset: {
-                                        type: 'html',
-                                        html: `<iframe src="${urlVal}" width="1024" height="576" style="border:none;"></iframe>`,
-                                        width: 1024, height: 576
-                                    },
-                                    start: 0, length: 15
-                                }]
-                            }]
+                            tracks: [
+                                {
+                                    /* Capa del Logo (Marca de Agua) */
+                                    clips: [{
+                                        asset: { type: 'image', src: logoUrl },
+                                        start: 0, length: 15,
+                                        position: 'topRight',
+                                        scale: 0.2,
+                                        offset: { x: -0.05, y: -0.05 }
+                                    }]
+                                },
+                                {
+                                    /* Capa de la Aplicación */
+                                    clips: [{
+                                        asset: {
+                                            type: 'html',
+                                            html: `<iframe src="${urlVal}" width="1080" height="1920" style="border:none;"></iframe>`,
+                                            width: 1080, height: 1920
+                                        },
+                                        start: 0, length: 15
+                                    }]
+                                }
+                            ]
                         },
-                        output: { format: 'mp4', resolution: 'sd' }
+                        output: { 
+                            format: 'mp4', 
+                            resolution: 'sd',
+                            aspectRatio: '9:16' // Formato vertical
+                        }
                     })
                 });
 
                 const data = await response.json();
-
                 if (response.ok && data.response && data.response.id) {
                     checkStatus(data.response.id, apiVal);
                 } else {
-                    const errorMsg = data.response ? data.response.message : "Error en servidor";
-                    throw new Error(errorMsg);
+                    throw new Error(data.response ? data.response.message : "Error en servidor");
                 }
             } catch (error) {
                 alert("AVISO: " + error.message);
@@ -117,7 +136,7 @@
                     document.getElementById('btn-main').disabled = false;
                     document.getElementById('btn-main').style.opacity = "1";
                 } else if (status === 'failed') {
-                    alert("Error en el renderizado.");
+                    alert("Error en el renderizado. Revisa la URL.");
                     location.reload();
                 } else {
                     setTimeout(() => checkStatus(id, key), 4000);
