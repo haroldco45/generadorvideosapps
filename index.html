@@ -36,7 +36,7 @@
 
         <div id="loader" class="hidden mt-8 bg-slate-800/50 p-6 rounded-2xl">
             <div class="loader ease-linear rounded-full border-4 border-t-4 border-slate-900 h-10 w-10 mx-auto mb-4"></div>
-            <p id="status-msg" class="text-indigo-400 text-[10px] font-bold tracking-[0.2em] animate-pulse">PROCESANDO EN SHOTSTACK...</p>
+            <p id="status-msg" class="text-indigo-400 text-[10px] font-bold tracking-[0.2em] animate-pulse uppercase">PROCESANDO EN SHOTSTACK...</p>
         </div>
 
         <div id="result" class="hidden mt-8 p-6 bg-[#0f172a] rounded-[2rem] border border-green-500/20 shadow-inner">
@@ -89,7 +89,8 @@
                 if (response.ok && data.response && data.response.id) {
                     checkStatus(data.response.id, apiVal);
                 } else {
-                    throw new Error(data.response ? data.response.message : "Error en servidor");
+                    const errorMsg = data.response ? data.response.message : "Error en servidor";
+                    throw new Error(errorMsg);
                 }
             } catch (error) {
                 alert("AVISO: " + error.message);
@@ -104,7 +105,7 @@
                     headers: { 'x-api-key': key }
                 });
                 const data = await res.json();
-                const status = data.response ? data.response.status : null;
+                const status = (data && data.response) ? data.response.status : null;
 
                 if (status) document.getElementById('status-msg').innerText = status.toUpperCase() + "...";
 
