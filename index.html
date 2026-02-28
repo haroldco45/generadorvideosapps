@@ -2,102 +2,149 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Vibras Positivas | Video Generator Real</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vibras Positivas | Video App</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .gradient-bg { background: linear-gradient(135deg, #1e293b 0%, #334155 100%); }
+        .loader { border-top-color: #6366f1; animation: spinner 1.5s linear infinite; }
+        @keyframes spinner { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
 </head>
-<body class="bg-slate-900 text-white font-sans">
+<body class="bg-slate-900 text-white font-sans min-h-screen">
 
-    <main class="container mx-auto px-6 py-12 max-w-2xl">
-        <div class="text-center mb-10">
-            <h1 class="text-3xl font-bold italic text-indigo-400">Vibras Positivas</h1>
-            <p class="text-gray-400">Grabador de Apps en Tiempo Real</p>
+    <nav class="p-6 bg-slate-800 border-b border-slate-700 shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold italic text-indigo-400">Vibras Positivas <span class="text-slate-500 font-light text-sm italic">| Video Generator</span></h1>
+            <i class="fab fa-github text-2xl text-slate-400"></i>
         </div>
+    </nav>
+
+    <main class="container mx-auto px-6 py-12 text-center max-w-2xl">
+        <h2 class="text-3xl font-extrabold mb-4">Crea Videos de tus Apps</h2>
+        <p class="text-slate-400 mb-8">Ingresa la URL y tu API Key de Sandbox para generar el video real.</p>
 
         <div class="bg-slate-800 p-8 rounded-3xl shadow-2xl border border-slate-700">
-            <label class="block mb-2 text-sm font-medium">URL de la App a grabar:</label>
-            <input type="url" id="url-input" value="https://haroldco45.github.io/criollitas/" 
-                   class="w-full p-4 rounded-xl bg-slate-900 border border-slate-600 mb-6 outline-none focus:border-indigo-500">
-            
-            <input type="password" id="api-key" placeholder="Pega aquí tu API KEY de Shotstack" 
-                   class="w-full p-3 rounded-lg bg-slate-700 border border-slate-600 mb-6 text-sm">
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-left text-xs font-bold text-indigo-400 uppercase mb-1 ml-1">URL a Grabar</label>
+                    <input type="url" id="url-input" value="https://haroldco45.github.io/criollitas/" 
+                           class="w-full p-4 bg-slate-900 border border-slate-700 rounded-xl focus:border-indigo-500 outline-none transition text-sm">
+                </div>
 
-            <button onclick="requestVideo()" id="btn-main"
-                    class="w-full bg-indigo-600 hover:bg-indigo-500 p-4 rounded-xl font-bold transition duration-300">
-                <i class="fas fa-magic mr-2"></i> CREAR VIDEO DE 30s REAL
-            </button>
+                <div>
+                    <label class="block text-left text-xs font-bold text-indigo-400 uppercase mb-1 ml-1">API Key (Sandbox)</label>
+                    <input type="password" id="api-key" placeholder="Pega aquí tu llave de Shotstack" 
+                           class="w-full p-4 bg-slate-900 border border-slate-700 rounded-xl focus:border-indigo-500 outline-none transition text-sm text-center tracking-widest">
+                </div>
+                
+                <button onclick="requestVideo()" id="btn-main"
+                        class="w-full bg-indigo-600 hover:bg-indigo-500 text-white py-4 rounded-xl font-bold text-lg shadow-lg transition-all transform active:scale-95">
+                    <i class="fas fa-play-circle mr-2"></i> GENERAR VIDEO DE 15S
+                </button>
+            </div>
         </div>
 
-        <div id="loader" class="hidden mt-10 text-center">
-            <div class="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-indigo-500 mb-4"></div>
-            <p id="status-msg">Enviando URL al servidor de grabación...</p>
+        <div id="loader" class="hidden mt-12">
+            <div class="flex flex-col items-center">
+                <div class="loader ease-linear rounded-full border-4 border-t-4 border-slate-700 h-16 w-16 mb-4"></div>
+                <p id="status-msg" class="text-indigo-400 font-medium animate-pulse italic text-sm">Iniciando proceso en el servidor...</p>
+            </div>
         </div>
 
-        <div id="result" class="hidden mt-10 bg-slate-800 p-6 rounded-3xl border border-green-500/30">
-            <h2 class="text-green-400 font-bold mb-4 italic">¡VIDEO GENERADO CON ÉXITO!</h2>
-            <video id="final-video" controls class="w-full rounded-xl shadow-2xl mb-6"></video>
-            <a id="download-btn" href="#" download class="block text-center bg-green-600 p-4 rounded-xl font-bold">
-                📥 DESCARGAR MP4 AHORA
+        <div id="result" class="hidden mt-12 bg-slate-800 p-6 rounded-3xl border border-green-500/30">
+            <h3 class="text-green-400 font-bold mb-4 italic uppercase tracking-wider">¡Procesamiento Exitoso!</h3>
+            <video id="final-video" controls class="w-full rounded-xl shadow-2xl mb-6 bg-black aspect-video"></video>
+            <a id="download-btn" href="#" download="vibras_positivas.mp4" 
+               class="block w-full bg-green-600 hover:bg-green-500 text-white py-4 rounded-xl font-bold shadow-lg">
+                <i class="fas fa-download mr-2"></i> DESCARGAR MP4
             </a>
         </div>
     </main>
 
     <script>
         async function requestVideo() {
-            const urlToRecord = document.getElementById('url-input').value;
-            const apiKey = document.getElementById('api-key').value;
-            
-            if(!apiKey) return alert("Necesitas una API KEY de Shotstack para que funcione");
+            const urlInput = document.getElementById('url-input').value;
+            const apiKey = document.getElementById('api-key').value.trim();
+            const btn = document.getElementById('btn-main');
+            const loader = document.getElementById('loader');
+            const statusMsg = document.getElementById('status-msg');
 
-            document.getElementById('btn-main').disabled = true;
-            document.getElementById('loader').classList.remove('hidden');
+            if(!apiKey) return alert("Por favor, pega tu API KEY de Sandbox.");
 
-            // 1. Configuramos la petición para grabar la pantalla de la URL
-            const response = await fetch('https://api.shotstack.io/v1/render', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'x-api-key': apiKey
-                },
-                body: JSON.stringify({
-                    timeline: {
-                        tracks: [{
-                            clips: [{
-                                asset: {
-                                    type: 'html',
-                                    html: `<iframe src="${urlToRecord}" width="1024" height="576" style="border:none;"></iframe>`,
-                                    css: "body { margin: 0; overflow: hidden; }",
-                                    width: 1024,
-                                    height: 576
-                                },
-                                start: 0,
-                                length: 30
+            // Bloquear UI
+            btn.disabled = true;
+            btn.classList.add('opacity-50');
+            loader.classList.remove('hidden');
+            document.getElementById('result').classList.add('hidden');
+
+            try {
+                // 1. Enviar orden a Shotstack
+                const response = await fetch('https://api.shotstack.io/v1/render', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey },
+                    body: JSON.stringify({
+                        timeline: {
+                            tracks: [{
+                                clips: [{
+                                    asset: {
+                                        type: 'html',
+                                        html: `<iframe src="${urlInput}" width="1024" height="576" style="border:none;"></iframe>`,
+                                        width: 1024, height: 576
+                                    },
+                                    start: 0, length: 15
+                                }]
                             }]
-                        }]
-                    },
-                    output: { format: 'mp4', resolution: 'hd' }
-                })
-            });
+                        },
+                        output: { format: 'mp4', resolution: 'sd' }
+                    })
+                });
 
-            const data = await response.json();
-            const renderId = data.response.id;
-            checkStatus(renderId, apiKey);
+                const data = await response.json();
+                
+                if (!data.success) {
+                    throw new Error(data.response.message || "Error desconocido");
+                }
+
+                // 2. Monitorear estado
+                checkStatus(data.response.id, apiKey);
+
+            } catch (error) {
+                alert("Error: " + error.message);
+                btn.disabled = false;
+                btn.classList.remove('opacity-50');
+                loader.classList.add('hidden');
+            }
         }
 
         async function checkStatus(id, key) {
-            const res = await fetch(`https://api.shotstack.io/v1/render/${id}`, {
-                headers: { 'x-api-key': key }
-            });
-            const data = await res.json();
+            const statusMsg = document.getElementById('status-msg');
             
-            if(data.response.status === 'done') {
-                document.getElementById('loader').classList.add('hidden');
-                document.getElementById('result').classList.remove('hidden');
-                document.getElementById('final-video').src = data.response.url;
-                document.getElementById('download-btn').href = data.response.url;
-            } else {
-                document.getElementById('status-msg').innerText = "Procesando video... (" + data.response.status + ")";
-                setTimeout(() => checkStatus(id, key), 3000);
+            try {
+                const res = await fetch(`https://api.shotstack.io/v1/render/${id}`, {
+                    headers: { 'x-api-key': key }
+                });
+                const data = await res.json();
+                const status = data.response.status;
+
+                statusMsg.innerText = `Estado: ${status.toUpperCase()}...`;
+
+                if (status === 'done') {
+                    document.getElementById('loader').classList.add('hidden');
+                    document.getElementById('result').classList.remove('hidden');
+                    document.getElementById('final-video').src = data.response.url;
+                    document.getElementById('download-btn').href = data.response.url;
+                    document.getElementById('btn-main').disabled = false;
+                    document.getElementById('btn-main').classList.remove('opacity-50');
+                } else if (status === 'failed') {
+                    alert("El renderizado falló en el servidor.");
+                    location.reload();
+                } else {
+                    setTimeout(() => checkStatus(id, key), 3000); // Consultar cada 3 seg
+                }
+            } catch (e) {
+                console.error("Error consultando estado", e);
             }
         }
     </script>
