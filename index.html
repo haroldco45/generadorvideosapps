@@ -3,129 +3,102 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vibras Positivas | Video Studio v4</title>
+    <title>Vibras Positivas | Video Studio Radical</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        .loader { border-top-color: #6366f1; animation: spinner 1.5s linear infinite; }
-        @keyframes spinner { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-    </style>
 </head>
-<body class="bg-[#0f172a] text-white font-sans min-h-screen flex items-center justify-center p-4">
+<body class="bg-black text-white font-sans min-h-screen flex items-center justify-center p-4">
 
-    <div class="w-full max-w-lg bg-[#1e293b] p-8 rounded-[2rem] shadow-2xl border border-slate-700 text-center">
-        <h1 class="text-2xl font-black text-indigo-400 mb-6 italic tracking-tighter uppercase underline decoration-indigo-500/30">Vibras Positivas</h1>
+    <div class="w-full max-w-md bg-zinc-900 p-8 rounded-[2.5rem] border border-zinc-800 text-center shadow-2xl">
+        <h1 class="text-xl font-black text-indigo-500 mb-8 tracking-tighter uppercase italic">Vibras Positivas Studio</h1>
         
-        <div class="space-y-4">
-            <div class="text-left">
-                <label class="text-[10px] font-bold text-slate-500 uppercase ml-2 mb-1 block">URL de la App del Cliente</label>
-                <input type="url" id="url-input" placeholder="https://haroldco45.github.io/tu-app/" 
-                       class="w-full p-4 bg-[#0f172a] border border-slate-700 rounded-2xl outline-none text-sm focus:border-indigo-500 transition-all">
-            </div>
+        <div class="space-y-6">
+            <input type="url" id="url-input" value="https://haroldco45.github.io/criollitas/" 
+                   class="w-full p-4 bg-black border border-zinc-700 rounded-2xl outline-none text-sm text-center focus:border-indigo-500 transition-all">
             
-            <div class="text-left">
-                <label class="text-[10px] font-bold text-slate-500 uppercase ml-2 mb-1 block">Tu API Key (Sandbox)</label>
-                <input type="password" id="api-key" placeholder="Pega tu Sandbox Key aquí" 
-                       class="w-full p-4 bg-[#0f172a] border border-slate-700 rounded-2xl outline-none text-sm text-center tracking-widest">
-            </div>
+            <input type="password" id="api-key" placeholder="PEGA TU SANDBOX KEY AQUÍ" 
+                   class="w-full p-4 bg-black border border-zinc-700 rounded-2xl outline-none text-xs text-center tracking-[0.3em]">
             
-            <button onclick="requestVideo()" id="btn-main"
-                    class="w-full bg-indigo-600 py-4 rounded-2xl font-black hover:bg-indigo-500 transition-all shadow-lg uppercase tracking-widest active:scale-95">
-                GENERAR VIDEO VERTICAL 9:16
+            <button onclick="burnItDown()" id="btn-main"
+                    class="w-full bg-indigo-600 py-5 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-indigo-500 active:scale-95 transition-all shadow-lg shadow-indigo-500/20">
+                GENERAR VIDEO AHORA
             </button>
         </div>
 
-        <div id="loader" class="hidden mt-8 bg-slate-800/50 p-6 rounded-2xl">
-            <div class="loader ease-linear rounded-full border-4 border-t-4 border-slate-900 h-10 w-10 mx-auto mb-4"></div>
-            <p id="status-msg" class="text-indigo-400 text-[10px] font-bold tracking-[0.2em] animate-pulse uppercase">PROCESANDO MULTI-APP...</p>
+        <div id="loader" class="hidden mt-10">
+            <div class="w-10 h-10 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <p id="status-msg" class="text-indigo-400 text-[10px] font-bold tracking-widest animate-pulse uppercase">Conectando al motor...</p>
         </div>
 
-        <div id="result" class="hidden mt-8 p-6 bg-[#0f172a] rounded-[2rem] border border-green-500/20 shadow-inner">
-            <h3 class="text-green-400 font-bold mb-4 uppercase text-[10px] tracking-[0.3em]">¡Video Terminado!</h3>
-            <video id="final-video" controls class="w-full rounded-2xl mb-6 shadow-2xl border border-slate-800 bg-black aspect-[9/16]"></video>
-            <a id="download-btn" href="#" download="vibras_positivas_promo.mp4" 
-               class="block text-center bg-green-600 py-4 rounded-2xl font-bold text-sm hover:bg-green-500 transition-all shadow-lg uppercase">
-                📥 Descargar para WhatsApp
-            </a>
+        <div id="result" class="hidden mt-10 p-4 bg-black rounded-3xl border border-green-500/30">
+            <video id="final-video" controls class="w-full rounded-2xl mb-4 bg-zinc-800 aspect-[9/16]"></video>
+            <a id="download-btn" href="#" download class="block text-center bg-green-600 py-4 rounded-xl font-bold text-xs uppercase tracking-widest">Descargar MP4</a>
         </div>
     </div>
 
     <script>
-        async function requestVideo() {
-            const urlVal = document.getElementById('url-input').value.trim();
-            const apiVal = document.getElementById('api-key').value.trim();
-            const btn = document.getElementById('btn-main');
-            const loader = document.getElementById('loader');
+        async function burnItDown() {
+            const url = document.getElementById('url-input').value.trim();
+            const key = document.getElementById('api-key').value.trim();
+            if(!key) return alert("Falta la API Key");
 
-            if(!apiVal || !urlVal) return alert("Faltan datos para procesar.");
-            
-            btn.disabled = true;
-            btn.style.opacity = "0.5";
-            loader.classList.remove('hidden');
-            document.getElementById('result').classList.add('hidden');
+            document.getElementById('btn-main').style.display = 'none';
+            document.getElementById('loader').classList.remove('hidden');
+
+            // ESTRUCTURA RADICAL: Shotstack Browser Asset
+            const body = {
+                timeline: {
+                    soundtrack: { src: "https://shotstack-assets.s3.amazonaws.com/music/lofi.mp3", volume: 1 },
+                    tracks: [{
+                        clips: [{
+                            asset: { type: 'browser', url: url, width: 720, height: 1280 },
+                            start: 0, length: 10 // SOLO 10 SEGUNDOS PARA ASEGURAR ÉXITO
+                        }]
+                    }]
+                },
+                output: { format: 'mp4', resolution: 'preview', aspectRatio: '9:16' }
+            };
 
             try {
-                const response = await fetch('https://api.shotstack.io/v1/render', {
+                const res = await fetch('https://api.shotstack.io/v1/render', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'x-api-key': apiVal },
-                    body: JSON.stringify({
-                        timeline: {
-                            soundtrack: {
-                                src: "https://shotstack-assets.s3.amazonaws.com/music/lofi.mp3",
-                                effect: "fadeInOut"
-                            },
-                            tracks: [{
-                                clips: [{
-                                    asset: {
-                                        type: 'html',
-                                        html: `<iframe src="${urlVal}" width="1080" height="1920" style="border:none;"></iframe>`,
-                                        width: 1080, height: 1920
-                                    },
-                                    start: 0, length: 15
-                                }]
-                            }]
-                        },
-                        output: { format: 'mp4', resolution: 'sd', aspectRatio: '9:16' }
-                    })
+                    headers: { 'Content-Type': 'application/json', 'x-api-key': key },
+                    body: JSON.stringify(body)
                 });
 
-                const data = await response.json();
-                if (response.ok && data.response && data.response.id) {
-                    checkStatus(data.response.id, apiVal);
+                const data = await res.json();
+                if(data.response && data.response.id) {
+                    check(data.response.id, key);
                 } else {
-                    throw new Error(data.response ? data.response.message : "Error de comunicación");
+                    alert("Error: " + (data.message || "Revisa tu API Key"));
+                    location.reload();
                 }
-            } catch (error) {
-                alert("AVISO: " + error.message);
-                btn.disabled = false; btn.style.opacity = "1";
-                loader.classList.add('hidden');
+            } catch (e) {
+                alert("Fallo de red. Intenta de nuevo.");
+                location.reload();
             }
         }
 
-        async function checkStatus(id, key) {
+        async function check(id, key) {
             try {
-                const res = await fetch(`https://api.shotstack.io/v1/render/${id}`, {
-                    headers: { 'x-api-key': key }
-                });
+                const res = await fetch('https://api.shotstack.io/v1/render/' + id, { headers: { 'x-api-key': key } });
                 const data = await res.json();
-                const status = (data && data.response) ? data.response.status : null;
+                const status = data.response.status;
+                
+                document.getElementById('status-msg').innerText = status.toUpperCase() + "...";
 
-                if (status) document.getElementById('status-msg').innerText = status.toUpperCase() + "...";
-
-                if (status === 'done') {
+                if(status === 'done') {
                     document.getElementById('loader').classList.add('hidden');
                     document.getElementById('result').classList.remove('hidden');
                     document.getElementById('final-video').src = data.response.url;
                     document.getElementById('download-btn').href = data.response.url;
-                    document.getElementById('btn-main').disabled = false;
-                    document.getElementById('btn-main').style.opacity = "1";
-                } else if (status === 'failed') {
-                    alert("Error en el renderizado.");
+                } else if(status === 'failed') {
+                    alert("El servidor falló. Intenta con otra URL.");
                     location.reload();
                 } else {
-                    setTimeout(() => checkStatus(id, key), 4000);
+                    setTimeout(() => check(id, key), 4000);
                 }
             } catch (e) {
-                setTimeout(() => checkStatus(id, key), 4000);
+                setTimeout(() => check(id, key), 4000);
             }
         }
     </script>
