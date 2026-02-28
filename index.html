@@ -3,96 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vibras Positivas | Video App Profesional</title>
+    <title>Vibras Positivas | Video Studio</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         .loader { border-top-color: #6366f1; animation: spinner 1.5s linear infinite; }
         @keyframes spinner { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .bg-custom { background: radial-gradient(circle at top right, #1e293b, #0f172a); }
     </style>
 </head>
-<body class="bg-custom text-white font-sans min-h-screen">
+<body class="bg-slate-900 text-white font-sans min-h-screen flex items-center justify-center p-4">
 
-    <nav class="p-6 bg-slate-900/50 border-b border-slate-700 shadow-xl text-center">
-        <h1 class="text-2xl font-bold italic text-indigo-400 tracking-tighter">
-            Vibras Positivas <span class="text-slate-500 font-light text-sm italic">| Video Studio</span>
-        </h1>
-    </nav>
-
-    <main class="container mx-auto px-6 py-12 text-center max-w-2xl">
-        <div class="mb-10">
-            <h2 class="text-3xl font-black mb-2 uppercase tracking-tight">Generador Real de Video</h2>
-            <p class="text-slate-400 italic">Captura 15 segundos de tu app "Criollitas" directamente desde la URL.</p>
-        </div>
-
-        <div class="bg-slate-800 p-8 rounded-3xl shadow-2xl border border-slate-700">
-            <div class="space-y-6">
-                <div>
-                    <label class="block text-left text-xs font-black text-indigo-400 uppercase mb-2 ml-1">URL de la Aplicación</label>
-                    <input type="url" id="url-input" value="https://haroldco45.github.io/criollitas/" 
-                           class="w-full p-4 bg-slate-900 border border-slate-700 rounded-2xl focus:border-indigo-500 outline-none text-sm transition-all shadow-inner">
-                </div>
-
-                <div>
-                    <label class="block text-left text-xs font-black text-indigo-400 uppercase mb-2 ml-1">API Key de Shotstack (Sandbox)</label>
-                    <input type="password" id="api-key" placeholder="Pega tu Sandbox Key aquí" 
-                           class="w-full p-4 bg-slate-900 border border-slate-700 rounded-2xl focus:border-indigo-500 outline-none text-sm text-center tracking-widest transition-all shadow-inner">
-                    <p class="text-[10px] text-slate-500 mt-2 italic text-left px-2">Usa la llave naranja de tu panel de Shotstack.</p>
-                </div>
-                
-                <button onclick="requestVideo()" id="btn-main"
-                        class="w-full bg-indigo-600 hover:bg-indigo-500 text-white py-5 rounded-2xl font-black text-lg shadow-lg transition-all active:scale-95 flex items-center justify-center">
-                    <i class="fas fa-magic mr-3"></i> EMPEZAR GRABACIÓN
-                </button>
+    <div class="w-full max-w-lg bg-slate-800 p-8 rounded-3xl shadow-2xl border border-slate-700 text-center">
+        <h1 class="text-2xl font-bold text-indigo-400 mb-6 italic uppercase tracking-tighter">Vibras Positivas</h1>
+        
+        <div class="space-y-4">
+            <div class="text-left">
+                <label class="text-[10px] font-bold text-slate-500 uppercase ml-1">URL de la App</label>
+                <input type="url" id="url-input" value="https://haroldco45.github.io/criollitas/" 
+                       class="w-full p-4 bg-slate-900 border border-slate-700 rounded-xl outline-none text-sm">
             </div>
-        </div>
-
-        <div id="loader" class="hidden mt-12 bg-slate-800/50 p-6 rounded-3xl border border-slate-700">
-            <div class="flex flex-col items-center">
-                <div class="loader ease-linear rounded-full border-4 border-t-4 border-slate-700 h-16 w-16 mb-4"></div>
-                <p id="status-msg" class="text-indigo-400 font-bold animate-pulse uppercase text-xs tracking-widest">Enviando orden al servidor...</p>
-                <p class="text-[10px] text-slate-500 mt-2 italic">Por favor, no cierres la pestaña del celular.</p>
+            
+            <div class="text-left">
+                <label class="text-[10px] font-bold text-slate-500 uppercase ml-1">API Key (Sandbox)</label>
+                <input type="password" id="api-key" placeholder="Pega tu Sandbox Key aquí" 
+                       class="w-full p-4 bg-slate-900 border border-slate-700 rounded-xl outline-none text-sm text-center">
             </div>
+            
+            <button onclick="requestVideo()" id="btn-main"
+                    class="w-full bg-indigo-600 py-4 rounded-xl font-bold hover:bg-indigo-500 transition-all shadow-lg uppercase tracking-widest">
+                GENERAR VIDEO REAL
+            </button>
         </div>
 
-        <div id="result" class="hidden mt-12 bg-slate-800 p-6 rounded-3xl border border-green-500/30 shadow-2xl">
-            <h3 class="text-green-400 font-black mb-6 italic uppercase tracking-widest flex items-center justify-center">
-                <i class="fas fa-check-circle mr-2"></i> ¡Procesamiento Exitoso!
-            </h3>
-            <video id="final-video" controls class="w-full rounded-2xl shadow-2xl mb-8 bg-black aspect-video border border-slate-700"></video>
-            <a id="download-btn" href="#" download="vibras_positivas_criollitas.mp4" 
-               class="block w-full bg-green-600 hover:bg-green-500 text-white py-5 rounded-2xl font-black shadow-lg text-center transition-all hover:scale-[1.02]">
-                <i class="fas fa-download mr-2"></i> DESCARGAR VIDEO MP4
+        <div id="loader" class="hidden mt-8">
+            <div class="loader ease-linear rounded-full border-4 border-t-4 border-slate-700 h-12 w-12 mx-auto mb-4"></div>
+            <p id="status-msg" class="text-indigo-400 text-sm animate-pulse font-bold">CONECTANDO...</p>
+        </div>
+
+        <div id="result" class="hidden mt-8 p-6 bg-slate-900 rounded-2xl border border-green-500/30 shadow-inner">
+            <h3 class="text-green-400 font-bold mb-4 uppercase text-xs tracking-widest">¡Video Listo para Descargar!</h3>
+            <video id="final-video" controls class="w-full rounded-xl mb-6 shadow-2xl border border-slate-700"></video>
+            <a id="download-btn" href="#" download="vibras_positivas.mp4" 
+               class="block text-center bg-green-600 py-4 rounded-xl font-bold text-sm hover:bg-green-500 transition-all shadow-lg">
+                📥 GUARDAR MP4
             </a>
         </div>
-    </main>
+    </div>
 
     <script>
         async function requestVideo() {
             const urlInput = document.getElementById('url-input').value;
-            const apiKey = document.getElementById('api-key').value.trim(); // .trim() es vital para limpiar la clave
+            const apiKey = document.getElementById('api-key').value.trim();
             const btn = document.getElementById('btn-main');
             const loader = document.getElementById('loader');
             const statusMsg = document.getElementById('status-msg');
 
-            if(!apiKey) return alert("🚨 Debes pegar tu API KEY de Sandbox.");
+            if(!apiKey) return alert("Por favor, pega tu Sandbox Key");
 
-            // Resetear Interfaz
             btn.disabled = true;
-            btn.classList.add('opacity-50');
             loader.classList.remove('hidden');
             document.getElementById('result').classList.add('hidden');
-            statusMsg.innerText = "CONECTANDO CON SHOTSTACK...";
 
             try {
-                // Paso 1: Petición de Renderizado
                 const response = await fetch('https://api.shotstack.io/v1/render', {
                     method: 'POST',
-                    headers: { 
-                        'Content-Type': 'application/json', 
-                        'x-api-key': apiKey 
-                    },
+                    headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey },
                     body: JSON.stringify({
                         timeline: {
                             tracks: [{
@@ -102,7 +76,7 @@
                                         html: `<iframe src="${urlInput}" width="1024" height="576" style="border:none;"></iframe>`,
                                         width: 1024, height: 576
                                     },
-                                    start: 0, length: 15 // Duración de 15 segundos
+                                    start: 0, length: 15
                                 }]
                             }]
                         },
@@ -110,39 +84,33 @@
                     })
                 });
 
-                // Diagnóstico de Error en la Respuesta
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(`Error ${response.status}: ${errorData.response.message || 'Clave o URL inválida'}`);
-                }
-
                 const data = await response.json();
-                
-                if (data && data.success && data.response.id) {
-                    statusMsg.innerText = "ORDEN RECIBIDA. GRABANDO URL...";
+
+                // Lógica simplificada: Si no hay ID, hay error
+                if (data && data.response && data.response.id) {
+                    statusMsg.innerText = "GRABANDO APP...";
                     checkStatus(data.response.id, apiKey);
                 } else {
-                    throw new Error("Respuesta inesperada del servidor.");
+                    const errorTxt = data?.response?.message || "Error en la Key o la URL";
+                    throw new Error(errorTxt);
                 }
 
             } catch (error) {
-                alert("🚨 FALLO EN LA COMUNICACIÓN: \n" + error.message);
+                alert("AVISO: " + error.message);
                 btn.disabled = false;
-                btn.classList.remove('opacity-50');
                 loader.classList.add('hidden');
             }
         }
 
         async function checkStatus(id, key) {
-            const statusMsg = document.getElementById('status-msg');
             try {
                 const res = await fetch(`https://api.shotstack.io/v1/render/${id}`, {
                     headers: { 'x-api-key': key }
                 });
                 const data = await res.json();
-                const status = data.response.status;
+                const status = data?.response?.status;
 
-                statusMsg.innerText = `ESTADO ACTUAL: ${status.toUpperCase()}...`;
+                if (status) document.getElementById('status-msg').innerText = "ESTADO: " + status.toUpperCase();
 
                 if (status === 'done') {
                     document.getElementById('loader').classList.add('hidden');
@@ -150,16 +118,14 @@
                     document.getElementById('final-video').src = data.response.url;
                     document.getElementById('download-btn').href = data.response.url;
                     document.getElementById('btn-main').disabled = false;
-                    document.getElementById('btn-main').classList.remove('opacity-50');
                 } else if (status === 'failed') {
-                    throw new Error("El renderizado falló en el servidor remoto.");
+                    alert("El servidor no pudo crear el video.");
+                    location.reload();
                 } else {
-                    // Reintento cada 3 segundos
-                    setTimeout(() => checkStatus(id, key), 3000);
+                    setTimeout(() => checkStatus(id, key), 4000);
                 }
             } catch (e) {
-                alert("🚨 ERROR DE SEGUIMIENTO: " + e.message);
-                location.reload();
+                setTimeout(() => checkStatus(id, key), 4000);
             }
         }
     </script>
