@@ -9,29 +9,29 @@
 <body class="bg-[#0f172a] text-white font-sans min-h-screen flex items-center justify-center p-4">
 
     <div class="w-full max-w-md bg-[#1e293b] p-8 rounded-[2.5rem] shadow-2xl border border-slate-700 text-center">
-        <h1 class="text-2xl font-black text-indigo-400 mb-6 italic tracking-tighter uppercase">Vibras Positivas</h1>
+        <h1 class="text-2xl font-black text-indigo-400 mb-6 italic tracking-tighter uppercase underline decoration-indigo-500/30">Vibras Positivas</h1>
         
         <div class="space-y-4">
             <div class="text-left">
-                <label class="text-[10px] font-bold text-slate-500 uppercase ml-2 mb-1 block">URL de la Aplicación</label>
+                <label class="text-[10px] font-bold text-slate-500 uppercase ml-2 mb-1 block">URL de tu Aplicación</label>
                 <input type="url" id="url-input" value="https://haroldco45.github.io/criollitas/" 
                        class="w-full p-4 bg-[#0f172a] border border-slate-700 rounded-2xl outline-none text-sm focus:border-indigo-500 transition-all">
             </div>
             
             <div class="p-4 bg-slate-900/50 rounded-2xl border border-slate-700">
-                <p class="text-[10px] font-bold text-indigo-400 uppercase tracking-widest">Motor Sandbox Listo</p>
-                <p class="text-[9px] text-slate-500 mt-1 italic">API Key: CA9aK...Pp1TA cargada</p>
+                <p class="text-[10px] font-bold text-indigo-400 uppercase tracking-widest">Motor Sandbox Activado</p>
+                <p class="text-[9px] text-slate-500 mt-1 italic uppercase">API: CA9aK...Pp1TA</p>
             </div>
             
             <button onclick="generarVideo()" id="btn-main"
                     class="w-full bg-indigo-600 py-4 rounded-2xl font-black hover:bg-indigo-500 transition-all shadow-lg uppercase tracking-widest active:scale-95">
-                GENERAR VIDEO 9:16
+                GENERAR VIDEO REAL
             </button>
         </div>
 
         <div id="loader" class="hidden mt-8">
             <div class="w-10 h-10 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-            <p id="status-msg" class="text-indigo-400 text-[10px] font-bold animate-pulse uppercase italic">Validando Timeline...</p>
+            <p id="status-msg" class="text-indigo-400 text-[10px] font-bold tracking-widest animate-pulse uppercase">Procesando Video...</p>
         </div>
 
         <div id="result" class="hidden mt-8 p-6 bg-[#0f172a] rounded-[2rem] border border-green-500/20 shadow-inner">
@@ -39,7 +39,7 @@
             <video id="final-video" controls class="w-full rounded-2xl mb-6 shadow-2xl border border-slate-800 bg-black aspect-[9/16]"></video>
             <a id="download-btn" href="#" download="vibras_positivas.mp4" 
                class="block text-center bg-green-600 py-4 rounded-2xl font-bold text-sm hover:bg-green-500 transition-all shadow-lg uppercase">
-                📥 Guardar MP4
+                📥 Descargar MP4
             </a>
         </div>
     </div>
@@ -56,7 +56,7 @@
             loader.classList.remove('hidden');
 
             try {
-                // Ajuste de Timeline: Shotstack requiere que 'browser' tenga dimensiones y URL correctas
+                // Ajustamos la estructura de la 'timeline' para cumplir con la validación de Shotstack
                 const response = await fetch('https://api.shotstack.io/stage/render', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'x-api-key': API_KEY },
@@ -66,16 +66,16 @@
                                 clips: [{
                                     asset: { 
                                         type: 'browser', 
-                                        url: url
+                                        url: url 
                                     },
                                     start: 0, 
-                                    length: 10 // Reducido a 10s para asegurar estabilidad inicial
+                                    length: 12 // Duración de 12 segundos
                                 }]
                             }]
                         },
                         output: { 
                             format: 'mp4', 
-                            size: { width: 720, height: 1280 } // Dimensiones explícitas para 9:16
+                            size: { width: 720, height: 1280 } // Definimos el tamaño aquí para evitar el error de validación
                         }
                     })
                 });
@@ -85,12 +85,11 @@
                 if (response.ok && data.response && data.response.id) {
                     checkStatus(data.response.id);
                 } else {
-                    // Si hay error de validación, mostrar el detalle exacto
-                    const msg = data.response && data.response.message ? data.response.message : "Error de estructura";
+                    const msg = data.response && data.response.message ? data.response.message : "Error en el formato del video";
                     throw new Error(msg);
                 }
             } catch (error) {
-                alert("DETALLE TÉCNICO: " + error.message);
+                alert("AVISO TÉCNICO: " + error.message);
                 location.reload();
             }
         }
@@ -111,7 +110,7 @@
                     document.getElementById('final-video').src = data.response.url;
                     document.getElementById('download-btn').href = data.response.url;
                 } else if (status === 'failed') {
-                    alert("El renderizado falló. Prueba con otra URL.");
+                    alert("El servidor no pudo procesar la URL de la empresa.");
                     location.reload();
                 } else {
                     setTimeout(() => checkStatus(id), 4000);
